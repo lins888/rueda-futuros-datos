@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rueda de Futuros — Los usuarios cobran por sus datos personales</title>
+<style>
+  :root{--dark:#33333c;--green:#12784a;--orange:#d5851f;--ink:#2b2b33;}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#f4f5f7;font-family:'Segoe UI',Arial,Helvetica,sans-serif;color:var(--ink);}
+  .page{max-width:1000px;margin:0 auto;padding:24px 20px 60px;}
+  .card{background:#fff;border-radius:18px;box-shadow:0 6px 24px rgba(0,0,0,.06);padding:18px;margin-bottom:22px;}
+  svg{display:block;width:100%;height:auto;max-width:760px;margin:0 auto;}
+  .seg{cursor:pointer;transition:opacity .12s;}
+  .seg:hover{opacity:.82;}
+  .tip{text-align:center;color:#8a8a92;font-size:13px;margin:-4px 0 0;}
+  h2{font-size:19px;margin:6px 0 4px;text-align:center;}
+  .sub{text-align:center;color:#7a7a82;font-size:13px;margin:0 0 16px;}
+  .barbtn{display:flex;justify-content:center;gap:10px;margin:0 0 16px;flex-wrap:wrap;}
+  .barbtn button{border:0;border-radius:999px;padding:9px 18px;font-size:13px;font-weight:700;cursor:pointer;color:#fff;background:var(--ink);}
+  .barbtn button:hover{opacity:.85}
+  .grouptitle{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:800;margin:16px 4px 10px;text-transform:uppercase;letter-spacing:.4px;}
+  .dot{width:13px;height:13px;border-radius:4px;display:inline-block;}
+  details{border-radius:12px;margin-bottom:9px;border:1px solid #ececf0;background:#fff;}
+  details summary{list-style:none;cursor:pointer;padding:13px 16px;font-weight:700;font-size:14px;display:flex;align-items:center;gap:10px;}
+  details summary::-webkit-details-marker{display:none}
+  .num{flex:0 0 26px;width:26px;height:26px;border-radius:50%;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:center;font-weight:800;}
+  .chev{margin-left:auto;transition:.2s;color:#9a9aa2;font-size:12px;}
+  details[open] .chev{transform:rotate(90deg)}
+  details .body{padding:0 16px 15px 52px;font-size:14px;line-height:1.55;color:#43434c;}
+  .g details{border-left:5px solid var(--green)} .g .num{background:var(--green)}
+  .o details{border-left:5px solid var(--orange)} .o .num{background:var(--orange)}
+  .g .grouptitle{color:var(--green)} .o .grouptitle{color:var(--orange)}
+  /* modal */
+  #ov{position:fixed;inset:0;background:rgba(20,20,25,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:99;}
+  #ov.on{display:flex}
+  #mod{background:#fff;border-radius:16px;max-width:440px;width:100%;padding:0;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:pop .16s ease;}
+  @keyframes pop{from{transform:scale(.94);opacity:.5}to{transform:scale(1);opacity:1}}
+  #modbar{height:7px}
+  #modin{padding:22px 24px 24px}
+  #modtag{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;margin-bottom:8px}
+  #modt{font-size:19px;font-weight:800;margin:0 0 12px;line-height:1.25}
+  #modx{font-size:14.5px;line-height:1.6;color:#43434c;margin:0}
+  #modclose{margin-top:18px;border:0;background:var(--ink);color:#fff;border-radius:999px;padding:9px 20px;font-weight:700;cursor:pointer;font-size:13px}
+  .credit{text-align:center;color:#9a9aa2;font-size:12px;margin-top:24px}
+  @media print{.barbtn,.tip{display:none} body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="card">
+    <svg id="svg" viewBox="0 0 920 900" preserveAspectRatio="xMidYMid meet"></svg>
+    <p class="tip">👆 Haz clic en cualquier parte de la rueda para ver su justificación</p>
+  </div>
+
+  <h2>Justificación de cada consecuencia</h2>
+  <p class="sub">Por qué cada rama se deriva del evento central. Clic en la rueda o en cada ítem · «Abrir todo» para captura.</p>
+  <div class="barbtn">
+    <button onclick="allDetails(true)">Abrir todo</button>
+    <button onclick="allDetails(false)" style="background:#8a8a93">Cerrar todo</button>
+  </div>
+
+  <div class="g">
+    <div class="grouptitle"><span class="dot" style="background:var(--green)"></span>Consecuencias directas (1er orden)</div>
+    <div id="green-list"></div>
+  </div>
+  <div class="o">
+    <div class="grouptitle"><span class="dot" style="background:var(--orange)"></span>Consecuencias indirectas (2do orden) · derivan de «Las personas controlan y venden sus datos»</div>
+    <div id="orange-list"></div>
+  </div>
+
+  <p class="credit">Espacio académico: Imaginación y Creatividad · Método Rueda de Futuros (Jerome Glenn)</p>
+</div>
+
+<!-- modal -->
+<div id="ov" onclick="if(event.target.id==='ov')closeMod()">
+  <div id="mod">
+    <div id="modbar"></div>
+    <div id="modin">
+      <div id="modtag"></div>
+      <h3 id="modt"></h3>
+      <p id="modx"></p>
+      <button id="modclose" onclick="closeMod()">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const CENTER={tag:"Evento central",title:"Los usuarios comienzan a cobrar por el uso de sus datos personales",
+  just:"Evento central de la Rueda de Futuros. Ante la pérdida de privacidad y el uso masivo de datos por la IA, se plantea un futuro donde la persona recupera el control y recibe un pago cada vez que una empresa usa su información.",color:"#33333c"};
+
+/* verdes: título + justificación */
+const GREEN=[
+  {title:"Las personas controlan y venden sus propios datos",
+   just:"Para poder cobrar, primero el usuario tiene que ser dueño real de su información: decidir quién la usa, para qué y por cuánto tiempo. El evento obliga a crear un sistema de consentimiento donde cada dato es un activo personal que la persona administra."},
+  {title:"Nacen wallets y bancos de datos personales",
+   just:"Cobrar exige un lugar donde guardar, medir y autorizar el uso de los datos, además de recibir los pagos. Igual que un banco guarda dinero, surgen plataformas-billetera que almacenan tu información y gestionan las transacciones por su uso."},
+  {title:"Surgen nuevos oficios: asesor de privacidad y bróker de datos",
+   just:"Cuando el dato tiene precio, aparece gente especializada en negociarlo: asesores que ayudan a proteger la información y fijar tarifas justas, y brókers que conectan a los usuarios con las empresas que quieren comprar esos datos."},
+  {title:"Las empresas pagan por permiso (se acaba el dato gratis)",
+   just:"El modelo actual «gratis a cambio de tus datos» se rompe. Las tecnológicas ya no pueden recolectar sin pagar: ahora deben comprar el permiso al usuario, lo que transforma por completo su modelo de negocio publicitario."},
+];
+/* naranjas: título + justificación */
+const ORANGE=[
+  {title:"Federación / sindicato de protección de datos",
+   just:"Una persona sola tiene poco poder frente a las grandes tecnológicas. Al volverse el dato un activo, los ciudadanos se agrupan en cooperativas o sindicatos para negociar en bloque mejores precios y condiciones, como hoy hace un sindicato laboral."},
+  {title:"Salario básico digital",
+   just:"Si generar datos produce ingresos, las personas más conectadas reciben pagos constantes solo por usar internet. Esto crea una especie de renta o «salario» digital que puede volverse una fuente de ingreso cotidiana."},
+  {title:"Alfabetización de datos en el colegio",
+   just:"Al convertirse los datos en dinero, se vuelve necesario enseñar desde temprano cuánto valen, cómo protegerlos y cómo negociarlos, igual que hoy se empieza a enseñar educación financiera básica."},
+  {title:"Seguros contra filtración de datos",
+   just:"Con los datos convertidos en un valor económico, aparecen seguros que te compensan si tu información es robada o filtrada, del mismo modo que existe un seguro contra el robo de bienes materiales."},
+  {title:"Privacidad, lujo de ricos",
+   just:"Quien necesita dinero venderá todos sus datos por necesidad, mientras quien tiene recursos podrá pagar por NO ser rastreado. La privacidad deja de ser un derecho de todos y se vuelve un privilegio de quien puede pagarla."},
+  {title:"Nueva desigualdad digital",
+   just:"Se abre una brecha entre quienes saben proteger y monetizar sus datos y quienes los regalan por necesidad o desconocimiento, creando una nueva forma de desigualdad basada en el manejo de la información."},
+];
+
+/* ---- lista inferior ---- */
+function renderList(id, arr, cls){
+  const el=document.getElementById(id);
+  arr.forEach((it,i)=>{
+    const d=document.createElement("details");
+    d.innerHTML=`<summary><span class="num">${i+1}</span>${it.title}<span class="chev">▶</span></summary><div class="body">${it.just}</div>`;
+    el.appendChild(d);
+  });
+}
+renderList("green-list",GREEN);
+renderList("orange-list",ORANGE);
+function allDetails(open){document.querySelectorAll("details").forEach(d=>d.open=open);}
+
+/* ---- modal ---- */
+function openMod(tag,title,text,color){
+  document.getElementById("modbar").style.background=color;
+  document.getElementById("modtag").textContent=tag;
+  document.getElementById("modtag").style.color=color;
+  document.getElementById("modt").textContent=title;
+  document.getElementById("modx").textContent=text;
+  document.getElementById("modclose").style.background=color;
+  document.getElementById("ov").classList.add("on");
+}
+function closeMod(){document.getElementById("ov").classList.remove("on");}
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMod();});
+
+/* ================= RUEDA (SVG) ================= */
+const NS="http://www.w3.org/2000/svg";
+const svg=document.getElementById("svg");
+const cx=460, cy=478;
+const rCenter=115, rGreen=245, rOrange=340, rBranch=368;
+const COL={dark:"#33333c", green:"#12784a", orange:"#d5851f", branchStroke:"#dcdcdc", white:"#ffffff"};
+function polar(r,a){const g=(a-90)*Math.PI/180;return [cx+r*Math.cos(g), cy+r*Math.sin(g)];}
+function sector(rIn,rOut,a0,a1){const [x1,y1]=polar(rOut,a0),[x2,y2]=polar(rOut,a1),[x3,y3]=polar(rIn,a1),[x4,y4]=polar(rIn,a0);const large=(a1-a0)>180?1:0;return `M ${x1} ${y1} A ${rOut} ${rOut} 0 ${large} 1 ${x2} ${y2} L ${x3} ${y3} A ${rIn} ${rIn} 0 ${large} 0 ${x4} ${y4} Z`;}
+function path(d,fill,stroke,sw,click){const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill",fill);if(stroke){p.setAttribute("stroke",stroke);p.setAttribute("stroke-width",sw||3);}if(click){p.setAttribute("class","seg");p.addEventListener("click",click);}svg.appendChild(p);}
+function circle(r,fill,stroke,sw,click){const c=document.createElementNS(NS,"circle");c.setAttribute("cx",cx);c.setAttribute("cy",cy);c.setAttribute("r",r);c.setAttribute("fill",fill);if(stroke){c.setAttribute("stroke",stroke);c.setAttribute("stroke-width",sw||3);}if(click){c.setAttribute("class","seg");c.addEventListener("click",click);}svg.appendChild(c);}
+function textLines(x,y,lines,size,color,weight,anchor){const t=document.createElementNS(NS,"text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("font-size",size);t.setAttribute("fill",color);t.setAttribute("font-weight",weight||"400");t.setAttribute("text-anchor",anchor||"middle");t.setAttribute("font-family","'Segoe UI',Arial,sans-serif");t.style.pointerEvents="none";const total=lines.length;lines.forEach((ln,i)=>{const ts=document.createElementNS(NS,"tspan");ts.setAttribute("x",x);ts.setAttribute("dy",i===0?`${-(total-1)*size*0.55}`:`${size*1.08}`);ts.textContent=ln;t.appendChild(ts);});svg.appendChild(t);}
+function labelAt(rMid,ang,lines,size,color,weight){const [x,y]=polar(rMid,ang);textLines(x,y,lines,size,color,weight||"700");}
+
+circle(rBranch, COL.white, COL.branchStroke, 2);
+
+/* verde: mapeo posición → dato */
+const greenSegs=[
+  {a0:-45,a1:45,  mid:0,   lines:["Las personas","controlan y","venden sus datos"], d:GREEN[0]},
+  {a0:45, a1:135, mid:90,  lines:["Nuevos oficios:","asesor de","privacidad y","bróker de datos"], d:GREEN[2]},
+  {a0:135,a1:225, mid:180, lines:["Empresas pagan","por permiso","(se acaba el","dato gratis)"], d:GREEN[3]},
+  {a0:225,a1:315, mid:270, lines:["Nacen wallets","y bancos de","datos personales"], d:GREEN[1]},
+];
+greenSegs.forEach(s=>path(sector(rCenter,rGreen,s.a0,s.a1), COL.green, COL.white, 3.5, ()=>openMod("Consecuencia directa (1er orden)",s.d.title,s.d.just,COL.green)));
+
+/* naranja */
+const orangeSegs=[
+  {lines:["Federación de","protección","de datos"], d:ORANGE[0]},
+  {lines:["Salario","básico digital"], d:ORANGE[1]},
+  {lines:["Alfabetización","de datos en","el colegio"], d:ORANGE[2]},
+  {lines:["Seguros contra","filtración"], d:ORANGE[3]},
+  {lines:["Privacidad,","lujo de ricos"], d:ORANGE[4]},
+  {lines:["Nueva","desigualdad"], d:ORANGE[5]},
+];
+const fanStart=-60,fanEnd=60,n=orangeSegs.length,step=(fanEnd-fanStart)/n;
+for(let i=0;i<n;i++){const a0=fanStart+i*step,a1=a0+step;const s=orangeSegs[i];path(sector(rGreen,rOrange,a0,a1), COL.orange, COL.white, 3.5, ()=>openMod("Consecuencia indirecta (2do orden)",s.d.title,s.d.just,COL.orange));labelAt(rGreen+(rOrange-rGreen)*0.5,a0+step/2,s.lines,10.5,COL.white,"700");}
+
+function branch(a){const [x,y]=polar(300,a);textLines(x,y,["(rama por","desarrollar)"],11,"#9a9a9a","400","middle");}
+branch(90);branch(180);branch(270);
+
+circle(rCenter, COL.dark, COL.white, 3.5, ()=>openMod(CENTER.tag,CENTER.title,CENTER.just,CENTER.color));
+textLines(cx,cy,["Los usuarios","comienzan a cobrar","por el uso de sus","datos personales"],14,COL.white,"700");
+greenSegs.forEach(s=>labelAt((s.mid===0)?rCenter+48:(rCenter+rGreen)/2, s.mid, s.lines, 12.5, COL.white, "700"));
+
+textLines(460,30,["Rueda de futuros: Los usuarios cobran por sus datos personales"],19,"#33333c","800","middle");
+textLines(460,54,["Basado en Strategic Foresight — método de Jerome Glenn"],12,"#8a8a8a","400","middle");
+const legend=[{c:COL.dark,t:"Evento central"},{c:COL.green,t:"Consec. directa (1er orden)"},{c:COL.orange,t:"Consec. indirecta (2do orden)"},{c:COL.white,t:"Rama sin desarrollar",stroke:COL.branchStroke}];
+let lx=90;
+legend.forEach(l=>{const r=document.createElementNS(NS,"rect");r.setAttribute("x",lx);r.setAttribute("y",876);r.setAttribute("width",16);r.setAttribute("height",16);r.setAttribute("fill",l.c);if(l.stroke){r.setAttribute("stroke",l.stroke);r.setAttribute("stroke-width",2);}svg.appendChild(r);const t=document.createElementNS(NS,"text");t.setAttribute("x",lx+22);t.setAttribute("y",889);t.setAttribute("font-size",12);t.setAttribute("fill","#444");t.setAttribute("font-family","'Segoe UI',Arial,sans-serif");t.textContent=l.t;svg.appendChild(t);lx+=l.t.length*6.4+52;});
+</script>
+</body>
+</html>
