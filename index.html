@@ -13,7 +13,6 @@
   svg{display:block;width:100%;height:auto;max-width:820px;margin:0 auto;}
   .tip{text-align:center;color:#5a5a62;font-size:15px;margin:14px 6px 0;font-weight:700;}
   .credit{text-align:center;color:#9a9aa2;font-size:12px;margin:0;padding:12px 14px 18px;}
-  /* modal */
   #ov{position:fixed;inset:0;background:rgba(20,20,25,.55);display:none;align-items:center;justify-content:center;padding:18px;z-index:99;}
   #ov.on{display:flex}
   #mod{background:#fff;border-radius:16px;max-width:440px;width:100%;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.35);animation:pop .16s ease;}
@@ -50,29 +49,57 @@
 <script>
 const CENTER={tag:"Evento central",title:"Los usuarios comienzan a cobrar por el uso de sus datos personales",
   just:"Evento central de la Rueda de Futuros. Ante la pérdida de privacidad y el uso masivo de datos por la IA, se plantea un futuro donde la persona recupera el control y recibe un pago cada vez que una empresa usa su información.",color:"#33333c"};
-const GREEN=[
-  {title:"Las personas controlan y venden sus propios datos",
-   just:"Para poder cobrar, primero el usuario tiene que ser dueño real de su información: decidir quién la usa, para qué y por cuánto tiempo. El evento obliga a crear un sistema de consentimiento donde cada dato es un activo personal que la persona administra."},
-  {title:"Nacen wallets y bancos de datos personales",
-   just:"Cobrar exige un lugar donde guardar, medir y autorizar el uso de los datos, además de recibir los pagos. Igual que un banco guarda dinero, surgen plataformas-billetera que almacenan tu información y gestionan las transacciones por su uso."},
-  {title:"Surgen nuevos oficios: asesor de privacidad y bróker de datos",
-   just:"Cuando el dato tiene precio, aparece gente especializada en negociarlo: asesores que ayudan a proteger la información y fijar tarifas justas, y brókers que conectan a los usuarios con las empresas que quieren comprar esos datos."},
-  {title:"Las empresas pagan por permiso (se acaba el dato gratis)",
-   just:"El modelo actual «gratis a cambio de tus datos» se rompe. Las tecnológicas ya no pueden recolectar sin pagar: ahora deben comprar el permiso al usuario, lo que transforma por completo su modelo de negocio publicitario."},
-];
-const ORANGE=[
-  {title:"Federación / sindicato de protección de datos",
-   just:"Una persona sola tiene poco poder frente a las grandes tecnológicas. Al volverse el dato un activo, los ciudadanos se agrupan en cooperativas o sindicatos para negociar en bloque mejores precios y condiciones, como hoy hace un sindicato laboral."},
-  {title:"Salario básico digital",
-   just:"Si generar datos produce ingresos, las personas más conectadas reciben pagos constantes solo por usar internet. Esto crea una especie de renta o «salario» digital que puede volverse una fuente de ingreso cotidiana."},
-  {title:"Alfabetización de datos en el colegio",
-   just:"Al convertirse los datos en dinero, se vuelve necesario enseñar desde temprano cuánto valen, cómo protegerlos y cómo negociarlos, igual que hoy se empieza a enseñar educación financiera básica."},
-  {title:"Seguros contra filtración de datos",
-   just:"Con los datos convertidos en un valor económico, aparecen seguros que te compensan si tu información es robada o filtrada, del mismo modo que existe un seguro contra el robo de bienes materiales."},
-  {title:"Privacidad, lujo de ricos",
-   just:"Quien necesita dinero venderá todos sus datos por necesidad, mientras quien tiene recursos podrá pagar por NO ser rastreado. La privacidad deja de ser un derecho de todos y se vuelve un privilegio de quien puede pagarla."},
-  {title:"Nueva desigualdad digital",
-   just:"Se abre una brecha entre quienes saben proteger y monetizar sus datos y quienes los regalan por necesidad o desconocimiento, creando una nueva forma de desigualdad basada en el manejo de la información."},
+
+/* 4 ramas: cada rama verde (directa) con 3 consecuencias naranjas (indirectas) */
+const BRANCHES=[
+  { a0:-45,a1:45, gmid:0,
+    gLines:["Las personas","controlan y","venden sus datos"],
+    green:{title:"Las personas controlan y venden sus propios datos",
+      just:"Para poder cobrar, primero el usuario tiene que ser dueño real de su información: decidir quién la usa, para qué y por cuánto tiempo. El evento obliga a crear un sistema de consentimiento donde cada dato es un activo personal que la persona administra."},
+    orange:[
+      {lines:["Federación de","protección","de datos"], title:"Federación / sindicato de protección de datos",
+       just:"Una persona sola tiene poco poder frente a las grandes tecnológicas. Al volverse el dato un activo, los ciudadanos se agrupan en cooperativas o sindicatos para negociar en bloque mejores precios y condiciones, como hoy hace un sindicato laboral."},
+      {lines:["Privacidad,","lujo de ricos"], title:"Privacidad, lujo de ricos",
+       just:"Quien necesita dinero venderá todos sus datos por necesidad, mientras quien tiene recursos podrá pagar por NO ser rastreado. La privacidad deja de ser un derecho de todos y se vuelve un privilegio de quien puede pagarla."},
+      {lines:["Nueva","desigualdad","digital"], title:"Nueva desigualdad digital",
+       just:"Se abre una brecha entre quienes saben proteger y monetizar sus datos y quienes los regalan por necesidad o desconocimiento, creando una nueva forma de desigualdad basada en el manejo de la información."},
+    ]},
+  { a0:45,a1:135, gmid:90,
+    gLines:["Nuevos oficios:","asesor de","privacidad y","bróker de datos"],
+    green:{title:"Surgen nuevos oficios: asesor de privacidad y bróker de datos",
+      just:"Cuando el dato tiene precio, aparece gente especializada en negociarlo: asesores que ayudan a proteger la información y fijar tarifas justas, y brókers que conectan a los usuarios con las empresas que quieren comprar esos datos."},
+    orange:[
+      {lines:["Alfabetización","de datos en","el colegio"], title:"Alfabetización de datos en el colegio",
+       just:"Al convertirse los datos en dinero, se vuelve necesario enseñar desde temprano cuánto valen, cómo protegerlos y cómo negociarlos, igual que hoy se empieza a enseñar educación financiera básica."},
+      {lines:["Licencia para","ser bróker","de datos"], title:"Licencia / certificación para brókers de datos",
+       just:"Como manejar y vender datos ajenos es delicado, el Estado exige una licencia o certificación para ejercer como bróker o asesor, igual que se regula a un contador o a un abogado."},
+      {lines:["Estafadores","que fingen","ser asesores"], title:"Estafadores que fingen ser asesores",
+       just:"Donde hay dinero nuevo aparecen los vivos: surgen falsos asesores que engañan a la gente para robar sus datos o sus pagos, lo que obliga a crear sellos de confianza y verificación."},
+    ]},
+  { a0:135,a1:225, gmid:180,
+    gLines:["Empresas pagan","por permiso","(se acaba el","dato gratis)"],
+    green:{title:"Las empresas pagan por permiso (se acaba el dato gratis)",
+      just:"El modelo actual «gratis a cambio de tus datos» se rompe. Las tecnológicas ya no pueden recolectar sin pagar: ahora deben comprar el permiso al usuario, lo que transforma por completo su modelo de negocio publicitario."},
+    orange:[
+      {lines:["Apps y redes","dejan de","ser gratis"], title:"Las apps y redes dejan de ser gratis",
+       just:"Si las empresas deben pagar por los datos, pierden su fuente de ingreso gratis; para sostenerse, muchas apps y redes empiezan a cobrar suscripción o suben de precio."},
+      {lines:["Más monopolio","(ventaja de","las grandes)"], title:"Más monopolio: ventaja de las grandes",
+       just:"Solo las empresas grandes pueden pagar millones por datos; las pequeñas quedan en desventaja, lo que concentra aún más el poder y el mercado en pocas manos."},
+      {lines:["Salario","básico","digital"], title:"Salario básico digital",
+       just:"Si las empresas pagan por usar datos, las personas más conectadas reciben pagos constantes solo por usar internet. Esto crea una especie de renta o «salario» digital cotidiano."},
+    ]},
+  { a0:225,a1:315, gmid:270,
+    gLines:["Nacen wallets","y bancos de","datos personales"],
+    green:{title:"Nacen wallets y bancos de datos personales",
+      just:"Cobrar exige un lugar donde guardar, medir y autorizar el uso de los datos, además de recibir los pagos. Igual que un banco guarda dinero, surgen plataformas-billetera que almacenan tu información y gestionan las transacciones por su uso."},
+    orange:[
+      {lines:["Hackeos y","fraudes a","las wallets"], title:"Hackeos y fraudes a las wallets",
+       just:"Al concentrar datos con valor económico en un solo lugar, las wallets se vuelven un blanco atractivo para los hackers, aumentando los robos y fraudes digitales."},
+      {lines:["Bancos entran","al negocio","de datos"], title:"Bancos tradicionales entran al negocio",
+       just:"Viendo que los datos son un nuevo activo con valor, los bancos de siempre crean sus propias «cuentas de datos» para no quedarse por fuera del negocio."},
+      {lines:["Seguros contra","filtración","de datos"], title:"Seguros contra filtración de datos",
+       just:"Con los datos convertidos en un valor económico, aparecen seguros que te compensan si tu información es robada o filtrada, del mismo modo que existe un seguro contra el robo de bienes materiales."},
+    ]},
 ];
 
 function openMod(tag,title,text,color){
@@ -89,44 +116,50 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")closeMod();});
 /* ===== RUEDA ===== */
 const NS="http://www.w3.org/2000/svg";
 const svg=document.getElementById("svg");
-const cx=460, cy=478;
-const rCenter=115, rGreen=245, rOrange=340, rBranch=368;
-const COL={dark:"#33333c", green:"#12784a", orange:"#d5851f", branchStroke:"#dcdcdc", white:"#ffffff"};
+const cx=460, cy=470;
+const rCenter=115, rGreen=248, rOrange=360;
+const COL={dark:"#33333c", green:"#12784a", orange:"#d5851f", white:"#ffffff"};
 function polar(r,a){const g=(a-90)*Math.PI/180;return [cx+r*Math.cos(g), cy+r*Math.sin(g)];}
 function sector(rIn,rOut,a0,a1){const [x1,y1]=polar(rOut,a0),[x2,y2]=polar(rOut,a1),[x3,y3]=polar(rIn,a1),[x4,y4]=polar(rIn,a0);const large=(a1-a0)>180?1:0;return `M ${x1} ${y1} A ${rOut} ${rOut} 0 ${large} 1 ${x2} ${y2} L ${x3} ${y3} A ${rIn} ${rIn} 0 ${large} 0 ${x4} ${y4} Z`;}
 function path(d,fill,stroke,sw,click){const p=document.createElementNS(NS,"path");p.setAttribute("d",d);p.setAttribute("fill",fill);if(stroke){p.setAttribute("stroke",stroke);p.setAttribute("stroke-width",sw||3);}if(click){p.style.cursor="pointer";p.addEventListener("click",click);}svg.appendChild(p);}
 function circle(r,fill,stroke,sw,click){const c=document.createElementNS(NS,"circle");c.setAttribute("cx",cx);c.setAttribute("cy",cy);c.setAttribute("r",r);c.setAttribute("fill",fill);if(stroke){c.setAttribute("stroke",stroke);c.setAttribute("stroke-width",sw||3);}if(click){c.style.cursor="pointer";c.addEventListener("click",click);}svg.appendChild(c);}
-function textLines(x,y,lines,size,color,weight,anchor){const t=document.createElementNS(NS,"text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("font-size",size);t.setAttribute("fill",color);t.setAttribute("font-weight",weight||"400");t.setAttribute("text-anchor",anchor||"middle");t.setAttribute("font-family","'Segoe UI',Arial,sans-serif");t.style.pointerEvents="none";const total=lines.length;lines.forEach((ln,i)=>{const ts=document.createElementNS(NS,"tspan");ts.setAttribute("x",x);ts.setAttribute("dy",i===0?`${-(total-1)*size*0.55}`:`${size*1.08}`);ts.textContent=ln;t.appendChild(ts);});svg.appendChild(t);}
+function textLines(x,y,lines,size,color,weight,anchor){const t=document.createElementNS(NS,"text");t.setAttribute("x",x);t.setAttribute("y",y);t.setAttribute("font-size",size);t.setAttribute("fill",color);t.setAttribute("font-weight",weight||"400");t.setAttribute("text-anchor",anchor||"middle");t.setAttribute("font-family","'Segoe UI',Arial,sans-serif");t.style.pointerEvents="none";const total=lines.length;lines.forEach((ln,i)=>{const ts=document.createElementNS(NS,"tspan");ts.setAttribute("x",x);ts.setAttribute("dy",i===0?`${-(total-1)*size*0.55}`:`${size*1.06}`);ts.textContent=ln;t.appendChild(ts);});svg.appendChild(t);}
 function labelAt(rMid,ang,lines,size,color,weight){const [x,y]=polar(rMid,ang);textLines(x,y,lines,size,color,weight||"700");}
 
-circle(rBranch, COL.white, COL.branchStroke, 2);
-const greenSegs=[
-  {a0:-45,a1:45,  mid:0,   lines:["Las personas","controlan y","venden sus datos"], d:GREEN[0]},
-  {a0:45, a1:135, mid:90,  lines:["Nuevos oficios:","asesor de","privacidad y","bróker de datos"], d:GREEN[2]},
-  {a0:135,a1:225, mid:180, lines:["Empresas pagan","por permiso","(se acaba el","dato gratis)"], d:GREEN[3]},
-  {a0:225,a1:315, mid:270, lines:["Nacen wallets","y bancos de","datos personales"], d:GREEN[1]},
-];
-greenSegs.forEach(s=>path(sector(rCenter,rGreen,s.a0,s.a1), COL.green, COL.white, 3.5, ()=>openMod("Consecuencia directa (1er orden)",s.d.title,s.d.just,COL.green)));
-const orangeSegs=[
-  {lines:["Federación de","protección","de datos"], d:ORANGE[0]},
-  {lines:["Salario","básico digital"], d:ORANGE[1]},
-  {lines:["Alfabetización","de datos en","el colegio"], d:ORANGE[2]},
-  {lines:["Seguros contra","filtración"], d:ORANGE[3]},
-  {lines:["Privacidad,","lujo de ricos"], d:ORANGE[4]},
-  {lines:["Nueva","desigualdad"], d:ORANGE[5]},
-];
-const fanStart=-60,fanEnd=60,n=orangeSegs.length,step=(fanEnd-fanStart)/n;
-for(let i=0;i<n;i++){const a0=fanStart+i*step,a1=a0+step;const s=orangeSegs[i];path(sector(rGreen,rOrange,a0,a1), COL.orange, COL.white, 3.5, ()=>openMod("Consecuencia indirecta (2do orden)",s.d.title,s.d.just,COL.orange));labelAt(rGreen+(rOrange-rGreen)*0.5,a0+step/2,s.lines,10.5,COL.white,"700");}
-function branch(a){const [x,y]=polar(300,a);textLines(x,y,["(rama por","desarrollar)"],11,"#9a9a9a","400","middle");}
-branch(90);branch(180);branch(270);
+/* GREEN + ORANGE por rama */
+BRANCHES.forEach(b=>{
+  // verde (directa)
+  path(sector(rCenter,rGreen,b.a0,b.a1), COL.green, COL.white, 3.5,
+       ()=>openMod("Consecuencia directa (1er orden)", b.green.title, b.green.just, COL.green));
+  // 3 naranjas (indirectas)
+  const seg=(b.a1-b.a0)/3;
+  b.orange.forEach((o,i)=>{
+    const oa0=b.a0+i*seg, oa1=oa0+seg;
+    path(sector(rGreen,rOrange,oa0,oa1), COL.orange, COL.white, 3.5,
+         ()=>openMod("Consecuencia indirecta (2do orden)", o.title, o.just, COL.orange));
+    labelAt(rGreen+(rOrange-rGreen)*0.5, oa0+seg/2, o.lines, 10.5, COL.white, "700");
+  });
+});
+
+/* separadores gruesos entre las 4 ramas (para agrupar verde + sus 3 naranjas) */
+function divline(ang){const [x1,y1]=polar(rCenter-2,ang),[x2,y2]=polar(rOrange+1,ang);const l=document.createElementNS(NS,"line");l.setAttribute("x1",x1);l.setAttribute("y1",y1);l.setAttribute("x2",x2);l.setAttribute("y2",y2);l.setAttribute("stroke",COL.white);l.setAttribute("stroke-width",7);l.style.pointerEvents="none";svg.appendChild(l);}
+[45,135,225,315].forEach(divline);
+
+/* centro */
 circle(rCenter, COL.dark, COL.white, 3.5, ()=>openMod(CENTER.tag,CENTER.title,CENTER.just,CENTER.color));
 textLines(cx,cy,["Los usuarios","comienzan a cobrar","por el uso de sus","datos personales"],14,COL.white,"700");
-greenSegs.forEach(s=>labelAt((s.mid===0)?rCenter+48:(rCenter+rGreen)/2, s.mid, s.lines, 12.5, COL.white, "700"));
+
+/* etiquetas verdes */
+BRANCHES.forEach(b=>labelAt((b.gmid===0)?rCenter+50:(rCenter+rGreen)/2, b.gmid, b.gLines, 12.5, COL.white, "700"));
+
+/* título */
 textLines(460,30,["Rueda de futuros: Los usuarios cobran por sus datos personales"],19,"#33333c","800","middle");
 textLines(460,54,["Basado en Strategic Foresight — método de Jerome Glenn"],12,"#8a8a8a","400","middle");
-const legend=[{c:COL.dark,t:"Evento central"},{c:COL.green,t:"Consec. directa (1er orden)"},{c:COL.orange,t:"Consec. indirecta (2do orden)"},{c:COL.white,t:"Rama sin desarrollar",stroke:COL.branchStroke}];
-let lx=90;
-legend.forEach(l=>{const r=document.createElementNS(NS,"rect");r.setAttribute("x",lx);r.setAttribute("y",876);r.setAttribute("width",16);r.setAttribute("height",16);r.setAttribute("fill",l.c);if(l.stroke){r.setAttribute("stroke",l.stroke);r.setAttribute("stroke-width",2);}svg.appendChild(r);const t=document.createElementNS(NS,"text");t.setAttribute("x",lx+22);t.setAttribute("y",889);t.setAttribute("font-size",12);t.setAttribute("fill","#444");t.setAttribute("font-family","'Segoe UI',Arial,sans-serif");t.textContent=l.t;svg.appendChild(t);lx+=l.t.length*6.4+52;});
+
+/* leyenda */
+const legend=[{c:COL.dark,t:"Evento central"},{c:COL.green,t:"Consecuencia directa (1er orden)"},{c:COL.orange,t:"Consecuencia indirecta (2do orden)"}];
+let lx=140;
+legend.forEach(l=>{const r=document.createElementNS(NS,"rect");r.setAttribute("x",lx);r.setAttribute("y",862);r.setAttribute("width",16);r.setAttribute("height",16);r.setAttribute("fill",l.c);svg.appendChild(r);const t=document.createElementNS(NS,"text");t.setAttribute("x",lx+22);t.setAttribute("y",875);t.setAttribute("font-size",12.5);t.setAttribute("fill","#444");t.setAttribute("font-family","'Segoe UI',Arial,sans-serif");t.textContent=l.t;svg.appendChild(t);lx+=l.t.length*6.6+52;});
 </script>
 </body>
 </html>
